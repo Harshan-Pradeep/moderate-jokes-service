@@ -15,6 +15,12 @@ export interface DeleteResponse {
     message: string;
 }
 
+export interface Joke {
+    content: string;
+    type: string;
+    status: string;
+}
+
 @Injectable()
 export class ModerateHttpService {
     private readonly deliveryServiceUrl: string;
@@ -55,7 +61,6 @@ export class ModerateHttpService {
 
     async deleteJoke(jokeId: string): Promise<DeleteResponse> {
         try {
-            console.log("http service",jokeId)
             const response = await firstValueFrom(
                 this.httpService.delete<DeleteResponse>(
                     `${this.submitServiceUrl}/api/v1/jokes/delete/${jokeId}`
@@ -64,6 +69,19 @@ export class ModerateHttpService {
             return response.data;
         } catch (error) {
             throw new Error(`Failed to delete joke: ${error.message}`);
+        }
+    }
+
+    async getAllJokes(page = 1, limit = 10): Promise<{ jokes: Joke[], total: number }> {
+        try {
+            const response = await firstValueFrom(
+                this.httpService.get<{ jokes: Joke[], total: number }>(
+                    `${this.submitServiceUrl}/api/v1/jokes/pending?page=${page}&limit=${limit}`
+                )
+            );
+            return response.data;
+        } catch (error) {
+            throw new Error(`Failed to fetch pending jokes: ${error.message}`);
         }
     }
 }
