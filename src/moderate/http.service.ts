@@ -21,6 +21,12 @@ export interface Joke {
     status: string;
 }
 
+export interface UpdateJokeDto {
+    content?: string;
+    type?: string;
+    status?: string;
+}
+
 @Injectable()
 export class ModerateHttpService {
     private readonly deliveryServiceUrl: string;
@@ -84,4 +90,20 @@ export class ModerateHttpService {
             throw new Error(`Failed to fetch pending jokes: ${error.message}`);
         }
     }
+
+    async updateJoke(jokeId: string, updateJokeDto: UpdateJokeDto): Promise<Joke> {
+        try {
+            const response = await firstValueFrom(
+                this.httpService.put<Joke>(
+                    `${this.submitServiceUrl}/api/v1/jokes/update?id=${jokeId}`,
+                    updateJokeDto
+                )
+            );
+            return response.data;
+        } catch (error) {
+            throw new Error(`Failed to update joke: ${error.message}`);
+        }
+    }
+
+    
 }

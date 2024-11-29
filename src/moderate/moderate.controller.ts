@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ModerateHttpService } from './http.service';
 import { ModerateService } from './moderate.service';
 import { CreateTypeDto } from './dto/create-type.dto';
 import { ObjectId } from 'mongodb';
 import { Logger } from '@nestjs/common';
+import { UpdateJokeDto } from './dto/update-joke.dto';
 
 
 @Controller('api/v1/moderate')
@@ -16,13 +17,13 @@ export class ModerateController {
     @Post('types')
     async createJokeType(@Body() createTypeDto: CreateTypeDto) {
         console.log("createTypeDto",createTypeDto);
-        return this.moderateService.createJokeType(createTypeDto);
+        return this.moderateHttpService.createJokeType(createTypeDto);
     }
 
     @Delete('delete')
     async deleteJoke(@Query('id') id: string) {
         const jokeId = id;
-        const result = await this.moderateService.deleteJoke(jokeId);
+        const result = await this.moderateHttpService.deleteJoke(jokeId);
         return result;
     }
 
@@ -35,6 +36,15 @@ export class ModerateController {
         const parsedLimit = parseInt(limit as any, 10);
         
         return this.moderateHttpService.getAllJokes(parsedPage, parsedLimit);
+    }
+
+    @Put('update')
+    async updateJoke(
+        @Query('id') id: string,
+        @Body() updateJokeDto: UpdateJokeDto
+    ) {
+        console.log("body",updateJokeDto)
+        return this.moderateHttpService.updateJoke(id, updateJokeDto);
     }
 
 
